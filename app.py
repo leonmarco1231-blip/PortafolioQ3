@@ -38,7 +38,12 @@ except ImportError:
     pass
 
 # ── Config ────────────────────────────────────────────────────────────
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+def _static_dir():
+    """Sirve desde static/ si existe (local), o desde la raíz (Render sin carpeta static/)."""
+    d = os.path.join(os.path.dirname(__file__), 'static')
+    return d if os.path.isdir(d) else os.path.dirname(__file__)
+
+app = Flask(__name__, static_folder=_static_dir())
 CORS(app)
 
 @app.errorhandler(gspread.exceptions.APIError)
