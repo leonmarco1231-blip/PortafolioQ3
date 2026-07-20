@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: portafolio-q3
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --timeout 120
+    envVars:
+      - key: MASTER_SPREADSHEET_ID
+        sync: false
+      - key: GOOGLE_CREDENTIALS_JSON
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.0
