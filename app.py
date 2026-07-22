@@ -1450,7 +1450,7 @@ def auth_login():
 
 # ── PATCH /api/portafolio/proyecto/fase ───────────────────────────────
 
-VALID_FASES = {'Desarrollo', 'Pruebas QA', 'Liberación', 'Estabilización', 'Hecho'}
+VALID_FASES = {'Desarrollo', 'Pruebas QA', 'Liberación', 'Estabilización', 'Hecho', 'Cerrado'}
 
 @app.route('/api/portafolio/proyecto/fase', methods=['PATCH'])
 def patch_proyecto_fase():

@@ -1651,6 +1651,15 @@ const PROJECT_STATE_GROUPS = [
     estados: ['hecho'],
   },
   {
+    key: 'cerrado',
+    label: 'Cerrado',
+    color: '#64748b',
+    cssClass: 'ps-cerrado',
+    includeInDashboard: true,
+    includeInProyectos: true,
+    estados: ['cerrado'],
+  },
+  {
     key: 'liberado',
     label: 'Liberado',
     color: '#9ca3af',
@@ -1689,6 +1698,23 @@ function _currentFaseFromData(p) {
     }
   }
   if (best) return best.fase;
+  return 'sin información';
+}
+
+// Homologa el valor de "Fase del proyecto" (granular del Sheet, p. ej. "Desarrollo
+// Backend", "Pruebas unitarias") al catálogo OFICIAL de fases (FASE_ORDER). Si ya es
+// oficial la respeta; si mapea por keyword de PROJECT_STATE_GROUPS devuelve la fase
+// oficial; si no mapea a ninguna, 'sin información'. Así la tarjeta solo pinta oficiales.
+const PROJECT_OFFICIAL_LABELS = new Set(FASE_ORDER);
+function homologateFase(raw){
+  const v = String(raw || '').trim();
+  if(!v || v.toLowerCase() === 'sin información') return 'sin información';
+  if(PROJECT_OFFICIAL_LABELS.has(v)) return v;
+  const low = v.toLowerCase();
+  for(const g of PROJECT_STATE_GROUPS){
+    if(!PROJECT_OFFICIAL_LABELS.has(g.label)) continue;   // solo grupos oficiales (los del dropdown)
+    if((g.estados || []).some(k => low.includes(String(k).toLowerCase()))) return g.label;
+  }
   return 'sin información';
 }
 
@@ -2112,7 +2138,7 @@ function loadProject(folio){
   // Semáforo: color de Estado_Semaforo (Base Maestra), texto de Fase del proyecto activa
   const sm=SEMAFORO_MAP[p.semaforo]||{cls:'s-gray',anim:null};
   const ev=document.getElementById('kpi-estado');
-  ev.textContent=_currentFaseFromData(p); ev.className='status-val '+sm.cls;
+  ev.textContent=homologateFase(_currentFaseFromData(p)); ev.className='status-val '+sm.cls;
   ['sl-r','sl-y','sl-g'].forEach(id=>document.getElementById(id).classList.remove('sl-anim'));
   if(sm.anim)document.getElementById(sm.anim).classList.add('sl-anim');
 
