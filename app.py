@@ -22,7 +22,7 @@ from datetime import datetime, date, timedelta, timezone
 
 import gspread
 from google.oauth2.service_account import Credentials
-from flask import Flask, jsonify, request, send_from_directory, send_file
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 try:
@@ -844,10 +844,16 @@ def _build_portafolio_data(wb, cfg, carril_key):
     rows_rie  = _filter_by_carril(_tabs.get('Riesgos',           []), org_vals)
     rows_dep  = _filter_by_carril(_tabs.get('Dependencias',      []), org_vals)
     rows_rep  = _filter_by_carril(_tabs.get('Replanificaciones', []), org_vals)
-    # Requerimientos usa Categoria_Etiqueta, no Carril
-    _all_req  = _tabs.get('Requerimientos', [])
-    rows_req  = [r for r in _all_req if r.get('Categoria_Etiqueta', '') in req_cat_vals] \
-                if req_cat_vals else []
+    # Requerimientos: el carril del requerimiento se identifica por Categoria_Etiqueta
+    # (la pestaña Requerimientos no tiene columna Carril). La comparación se hace de
+    # forma robusta (sin acentos/mayúsculas/espacios) contra la IDENTIDAD del carril
+    # —req_cat_values ∪ carril_values ∪ label— para NO depender de una lista manual
+    # (req_cat_values) que puede quedar incompleta. Ésa era la causa raíz por la que
+    # carriles como "Cripto Corporativo" (con req_cat_values vacío) aparecían sin
+    # requerimientos aunque sí existían en el Sheet.
+    _req_match = {_norm(v) for v in (set(req_cat_vals) | set(carril_vals) | {cfg.get('label', '')}) if v}
+    _all_req   = _tabs.get('Requerimientos', [])
+    rows_req   = [r for r in _all_req if _norm(r.get('Categoria_Etiqueta', '')) in _req_match]
     rows_lib  = _filter_by_carril(_tabs.get('Liberaciones',      []), org_vals)
     hc_aliases = cfg.get('hc_aliases', frozenset())
     rows_hc    = _filter_hc_by_celula(_tabs.get('Head Count',   []), hc_aliases)
@@ -1042,7 +1048,18 @@ def _build_portafolio_data(wb, cfg, carril_key):
         proyectos[folio]['motivoR'] = items[-1]['motivo'] if items else 'Sin replanificaciones.'
 
     # ── 1e. FASES MANUALES ───────────────────────────────────────────
-    # El tab 'Fases' fue eliminado de la BM — fase_manual siempre queda null.
+    # Fase_Actual: override manual del semáforo, leído del tab 'Fases'
+    # (creado por PATCH /api/portafolio/proyecto/fase; puede no existir aún).
+    try:
+        ws_fase   = wb.worksheet('Fases')
+        rows_fase = sheet_rows(ws_fase, 1)
+        for r in rows_fase:
+            f = str(r.get('ID_Proyecto', '') or '').strip()
+            fa = str(r.get('Fase_Actual', '') or '').strip()
+            if f and fa and f in proyectos:
+                proyectos[f]['fase_manual'] = fa
+    except gspread.exceptions.WorksheetNotFound:
+        pass
 
     # ── 2. REQUERIMIENTOS → PORTAFOLIOS ─────────────────────────────
     portafolios = {}
@@ -1433,7 +1450,7 @@ def auth_login():
 
 # ── PATCH /api/portafolio/proyecto/fase ───────────────────────────────
 
-VALID_FASES = {'Desarrollo', 'Pruebas QA', 'Liberación', 'Estabilización'}
+VALID_FASES = {'Desarrollo', 'Pruebas QA', 'Liberación', 'Estabilización', 'Hecho'}
 
 @app.route('/api/portafolio/proyecto/fase', methods=['PATCH'])
 def patch_proyecto_fase():
@@ -1468,30 +1485,12 @@ def patch_proyecto_fase():
             ws.update_acell(col_index_to_a1(ci_fase)  + str(row_i), fase)
             ws.update_acell(col_index_to_a1(ci_emp)   + str(row_i), emp)
             ws.update_acell(col_index_to_a1(ci_fecha) + str(row_i), now_str)
+            _PORTAFOLIO_CACHE.clear()  # forzar rebuild para que la fase persista al recargar
             return jsonify({'ok': True, 'updated': True})
 
     ws.append_row([folio, fase, emp, now_str], value_input_option='USER_ENTERED')
+    _PORTAFOLIO_CACHE.clear()  # forzar rebuild para que la fase persista al recargar
     return jsonify({'ok': True, 'created': True})
-
-
-# ── Descarga de archivos fuente (solo LOCAL) ───────────────────────────
-@app.route('/dev/download/app')
-def dev_download_app():
-    return send_file(
-        os.path.join(os.path.dirname(__file__), 'app.py'),
-        as_attachment=True,
-        download_name='app.py',
-        mimetype='text/x-python'
-    )
-
-@app.route('/dev/download/index')
-def dev_download_index():
-    return send_file(
-        os.path.join(os.path.dirname(__file__), 'static', 'index.html'),
-        as_attachment=True,
-        download_name='index.html',
-        mimetype='text/html'
-    )
 
 
 # ── Main ──────────────────────────────────────────────────────────────

@@ -169,25 +169,33 @@ button{font-family:var(--font)}
 .pq-cal-day-sub{font-size:7px;font-weight:700;line-height:1.1;text-align:center;white-space:nowrap;max-width:30px;overflow:hidden;text-overflow:ellipsis;opacity:.8}
 .pq-cal-day.oom{color:var(--text-muted);opacity:.28;font-weight:500}
 
-/* Calendario ejecutivo de liberaciones (por semana) */
-.pq-exec-cal{width:100%;padding:0 4px}
-.pq-exec-week{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--border)}
-.pq-exec-week:last-child{border-bottom:none}
-.pq-exec-week-cw .pq-exec-sem-hdr{color:var(--accent);font-weight:900}
-.pq-exec-sem-hdr{font-size:11px;font-weight:800;color:var(--text-muted);min-width:32px;flex-shrink:0}
-.pq-exec-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.pq-exec-chip{font-size:12px;white-space:nowrap;letter-spacing:.2px;line-height:1.5}
-/* ── Gantt Liberaciones (Dashboard Principal) ── */
-.pq-gantt{display:grid;width:100%;column-gap:0;row-gap:4px;padding:0}
-.pq-gantt-hdr-corner{}
-.pq-gantt-month{font-size:8px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);text-align:center;padding:0 2px 3px;border-bottom:1.5px solid var(--border)}
-.pq-gantt-wkhdr{font-size:8.5px;font-weight:700;color:var(--text-muted);text-align:center;padding:3px 0 4px}
-.pq-gantt-wkhdr-cw{color:var(--accent);font-weight:900}
-.pq-gantt-label{font-size:10px;font-weight:700;color:var(--text);display:flex;align-items:center;padding-right:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.pq-gantt-cell{height:22px;min-width:0}
-.pq-gantt-bar{display:flex;align-items:center}
-.pq-gantt-bar-first{padding-left:5px;font-size:8.5px;font-weight:800;color:#fff;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.3)}
-.pq-gantt-swatch{display:inline-block;width:9px;height:9px;border-radius:2px;flex-shrink:0}
+/* ── Roadmap Ejecutivo de Liberaciones (Dashboard Principal) ── */
+.pq-road{position:relative;width:100%;height:100%;display:flex;flex-direction:column;justify-content:safe center;gap:8px;overflow-y:auto;overflow-x:hidden}
+.pq-road-head{position:relative}
+.pq-road-months,.pq-road-weeks{display:grid;width:100%}
+.pq-road-months{margin-bottom:2px}
+.pq-road-month{font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);text-align:center;transition:color .3s ease}
+.pq-road-month.cur{font-size:10px;font-weight:900;color:var(--text);letter-spacing:.11em}
+.pq-road-wk{font-size:8px;font-weight:700;color:var(--text-muted);text-align:center;transition:color .3s ease}
+.pq-road-wk.cur{color:var(--accent);font-weight:900}
+.pq-road-trains{position:relative;display:flex;flex-direction:column;gap:11px}
+.pq-road-name{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--text);margin-bottom:4px;white-space:nowrap}
+.pq-road-lane{position:relative;height:24px}
+.pq-road-bar{position:absolute;top:0;height:100%;display:flex;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(15,23,42,.13);animation:pqRoadIn .3s ease both}
+.pq-road-seg{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden;padding:0 8px;cursor:default;transition:filter .2s ease,transform .2s ease}
+.pq-road-seg:hover{filter:brightness(1.1);transform:translateY(-1.5px)}
+.pq-road-seg-lbl{font-size:8.5px;font-weight:800;letter-spacing:.05em;color:#fff;white-space:nowrap;text-shadow:0 1px 1.5px rgba(0,0,0,.3)}
+.pq-road-today{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 8px 1px rgba(255,255,255,.8);pointer-events:none;z-index:3}
+.pq-road-cwline{position:absolute;top:0;bottom:0;border-left:1.5px dashed var(--accent);opacity:.45;pointer-events:none;z-index:1}
+.pq-road-hoy{position:absolute;top:-3px;transform:translate(-50%,-100%);font-size:7.5px;font-weight:800;letter-spacing:.09em;color:#fff;background:var(--accent);padding:1px 6px;border-radius:6px;pointer-events:none;z-index:2;white-space:nowrap}
+.pq-road-tip{position:fixed;z-index:9999;background:var(--white,#fff);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(15,23,42,.18);padding:9px 11px;pointer-events:none;opacity:0;transform:translateY(3px);transition:opacity .14s ease,transform .14s ease;max-width:230px}
+.pq-road-tip.show{opacity:1;transform:translateY(0)}
+.pq-road-tip-h{display:flex;align-items:center;gap:6px;font-weight:800;font-size:11.5px;color:var(--text);margin-bottom:5px}
+.pq-road-tip-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.pq-road-tip-row{display:flex;justify-content:space-between;gap:16px;font-size:11px;color:var(--text-sub);line-height:1.6}
+.pq-road-tip-row b{color:var(--text);font-weight:700}
+@keyframes pqRoadIn{from{opacity:0;transform:translateX(-7px)}to{opacity:1;transform:translateX(0)}}
+@media (max-width:1180px){.pq-road-seg-lbl{display:none}}
 
 /* Gauge de capacidad */
 .pq-gauge-wrap{flex-shrink:0;width:100%;display:flex;flex-direction:column;align-items:center;margin:0}
@@ -428,11 +436,8 @@ button{font-family:var(--font)}
 .bl-s-backlog{background:#f3f4f6;color:#374151;border-color:#d1d5db}.bl-s-backlog .bl-status-dot{background:#6b7280}
 .bl-s-refinamiento{background:#dbeafe;color:#1e3a8a;border-color:#93c5fd}.bl-s-refinamiento .bl-status-dot{background:#3b82f6}
 .bl-s-enfirmas{background:#fef3c7;color:#92400e;border-color:#fcd34d}.bl-s-enfirmas .bl-status-dot{background:#f59e0b}
-.bl-s-firmado{background:#dcfce7;color:#14532d;border-color:#86efac}.bl-s-firmado .bl-status-dot{background:#22c55e}
 .bl-s-planeado{background:#ede9fe;color:#4c1d95;border-color:#c4b5fd}.bl-s-planeado .bl-status-dot{background:#7c3aed}
 .bl-s-porplanear{background:#e0f2fe;color:#0c4a6e;border-color:#7dd3fc}.bl-s-porplanear .bl-status-dot{background:#0ea5e9}
-.bl-s-ongoing{background:#fff7ed;color:#7c2d12;border-color:#fdba74}.bl-s-ongoing .bl-status-dot{background:#f97316}
-.bl-s-detenido{background:#fee2e2;color:#7f1d1d;border-color:#fca5a5}.bl-s-detenido .bl-status-dot{background:#dc2626}
 .bl-estado-wrap{position:relative;display:inline-block}
 .bl-estado-dropdown{display:none;position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#fff;border:1px solid #d1d5db;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);z-index:500;min-width:160px;padding:6px;flex-direction:column;gap:3px}
 .bl-estado-dropdown.open{display:flex}
@@ -929,7 +934,7 @@ select.pfd-input{cursor:pointer}
     <div class="hdr-text">
       <div class="hdr-title">Portafolio Q3 2026</div>
       <div class="hdr-date" id="hdr-date"></div>
-      <div class="hdr-copy">Copyright &copy; Ágiles Azteca &middot; v1.2 <span style="background:#dc2626;color:#fff;font-size:10px;font-weight:800;letter-spacing:.8px;padding:1px 6px;border-radius:4px;vertical-align:middle;margin-left:4px">LOCAL</span> <a href="/dev/download/app" download style="font-size:10px;color:var(--accent);text-decoration:none;margin-left:6px;opacity:.8" title="Descargar app.py">⬇ app.py</a> <a href="/dev/download/index" download style="font-size:10px;color:var(--accent);text-decoration:none;margin-left:4px;opacity:.8" title="Descargar index.html">⬇ index.html</a></div>
+      <div class="hdr-copy">Copyright &copy; Ágiles Azteca &middot; v1.2</div>
     </div>
     <button class="reload-btn" id="reload-api-btn" title="Actualizar datos desde Google Sheets" onclick="reloadApiData()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -1548,6 +1553,17 @@ const SEMAFORO_MAP = {
   'Amarillo': {cls:'s-yellow', anim:'sl-y'},
   'Rojo':     {cls:'s-red',    anim:'sl-r'},
 };
+// ── Catálogo central de etapas de Liberaciones ─────────────────────────────
+// ÚNICA FUENTE DE VERDAD para color y etiqueta de las 4 etapas del ciclo.
+// Consumido por el calendario del Dashboard Principal y por el módulo Liberaciones.
+const LIB_STAGE_GROUPS = [
+  { key: 'anunciado', label: 'Anuncio',    color: '#6366f1' },
+  { key: 'qa',        label: 'QA',         color: '#d97706' },
+  { key: 'beta',      label: 'Beta',       color: '#16a34a' },
+  { key: 'tienda',    label: 'Liberación', color: '#7c3aed' },
+];
+const LIB_STAGE_COLOR = Object.fromEntries(LIB_STAGE_GROUPS.map(g => [g.key, g.color]));
+const LIB_STAGE_ORDER = LIB_STAGE_GROUPS.map(g => g.key);
 // Estado_Descripcion (Base Maestra) → color en el donut del Dashboard Principal.
 const ESTADO_DESC_COLORS = {
   'Por Hacer':      '#6b7280',
@@ -1626,13 +1642,22 @@ const PROJECT_STATE_GROUPS = [
     estados: ['estabiliz'],
   },
   {
+    key: 'hecho',
+    label: 'Hecho',
+    color: '#0d9488',
+    cssClass: 'ps-hecho',
+    includeInDashboard: true,
+    includeInProyectos: true,
+    estados: ['hecho'],
+  },
+  {
     key: 'liberado',
     label: 'Liberado',
     color: '#9ca3af',
     cssClass: 'ps-liberado',
     includeInDashboard: false,
     includeInProyectos: true,
-    estados: ['liberado', 'hecho'],
+    estados: ['liberado'],
   },
 ];
 
@@ -2306,15 +2331,6 @@ const REQ_STATE_GROUPS = [
     estados: ['En firmas'],
   },
   {
-    key: 'analizado',
-    label: 'Analizado',
-    color: '#22c55e',
-    cssClass: 'bl-s-firmado',
-    includeInDashboard: false,
-    includeInRequerimientos: true,
-    estados: ['Analizado', 'Firmado'],
-  },
-  {
     key: 'por_planear',
     label: 'Por planear',
     color: '#0ea5e9',
@@ -2331,24 +2347,6 @@ const REQ_STATE_GROUPS = [
     includeInDashboard: true,
     includeInRequerimientos: true,
     estados: ['Planeado'],
-  },
-  {
-    key: 'detenido',
-    label: 'Detenido',
-    color: '#dc2626',
-    cssClass: 'bl-s-detenido',
-    includeInDashboard: false,
-    includeInRequerimientos: true,
-    estados: ['Detenido'],
-  },
-  {
-    key: 'on_going',
-    label: 'On Going',
-    color: '#f97316',
-    cssClass: 'bl-s-ongoing',
-    includeInDashboard: false,
-    includeInRequerimientos: true,
-    estados: ['On Going', 'Ongoing'],
   },
 ];
 
@@ -2391,6 +2389,16 @@ const KPI_DEFS = REQ_STATE_GROUPS
 const REQ_FILTER_DEFS = REQ_STATE_GROUPS
   .filter(g => g.includeInRequerimientos)
   .map(g => ({ lbl: g.label, e: g.label, color: g.color }));
+
+// Catálogo oficial de estados de requerimientos (derivado de la ÚNICA fuente REQ_STATE_GROUPS).
+const REQ_OFFICIAL_LABELS = new Set(REQ_STATE_GROUPS.map(g => g.label));
+
+// Única función que decide si un requerimiento tiene estado oficial.
+// La usan Dashboard, Requerimientos, KPIs y filtros — no hay lógica de estado duplicada.
+// Normaliza internamente, así que es robusta al texto exacto del Sheet (acentos/mayúsculas).
+function isOfficialRequirementState(estado){
+  return REQ_OFFICIAL_LABELS.has(normalizeEstado(estado));
+}
 
 let reqNextId = 1;
 const PORTAFOLIOS = {};
@@ -3135,29 +3143,42 @@ function pqBuildCurrentMonthEvents(){
   });
   return map;
 }
+// Tooltip único reutilizable del roadmap ejecutivo
+function _pqRoadTip(){
+  let t = document.getElementById('pq-road-tip');
+  if(!t){ t = document.createElement('div'); t.id='pq-road-tip'; t.className='pq-road-tip'; document.body.appendChild(t); }
+  return t;
+}
 function pqRenderCalendar(){
   const wrap  = document.getElementById('pq-cal-wrap');
   const legEl = document.getElementById('pq-legend-calendario');
   if(!wrap) return;
   wrap.innerHTML = '';
   const vis = wrap.closest('.pq-visual');
+  // Misma caja que Requerimientos/Proyectos (200px). Solo estirar a lo ancho;
+  // el timeline se centra verticalmente dentro del mismo espacio útil.
+  if(vis){ vis.style.alignItems='stretch'; }
+  wrap.style.height = '100%';
 
-  const _resetVis = () => { if(vis){ vis.style.height=''; vis.style.alignItems=''; vis.style.justifyContent=''; } };
-
-  if(!libData.length){
-    _resetVis();
-    wrap.innerHTML='<div style="color:#9ca3af;font-size:12px;text-align:center;padding:20px">Sin trenes registrados</div>';
+  const _empty = (msg) => {
+    if(vis){ vis.style.alignItems=''; }
+    wrap.style.height='';
+    wrap.innerHTML='<div style="color:#9ca3af;font-size:12px;text-align:center;padding:20px">'+msg+'</div>';
     if(legEl) legEl.innerHTML='';
-    return;
-  }
+  };
+  if(!libData.length){ _empty('Sin trenes registrados'); return; }
 
-  const STAGE_COLOR = {anunciado:'#9ca3af', qa:'#f59e0b', beta:'#38bdf8', tienda:'#22c55e'};
-  const RANK        = {anunciado:0, qa:1, beta:2, tienda:3};
-  const MONTH_NAME  = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const year        = TODAY_REF.getFullYear();
-  const cw          = dateToISOWeek(TODAY_REF);
+  const RANK       = {anunciado:0, qa:1, beta:2, tienda:3};
+  const MONTH_NAME = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const MES3       = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const SEG_LBL    = {anunciado:'ANUN', qa:'QA', beta:'BETA', tienda:'LIB'};
+  const STAGE_LABEL_MAP = Object.fromEntries(LIB_STAGE_GROUPS.map(g=>[g.key,g.label]));
+  const year = TODAY_REF.getFullYear();
+  const cw   = dateToISOWeek(TODAY_REF);
+  const curMonth = libIsoWeekMonday(year, cw).getMonth();
+  const fmtD = d => d.getDate()+' '+MES3[d.getMonth()];
 
-  // Stage per week for each tren
+  // Etapa por semana para cada tren (idéntica al Gantt)
   const pkgStages = libData.map(pkg => {
     const ann = +pkg.anuncioSem, lib = +pkg.liberacionSem;
     const map = {};
@@ -3177,97 +3198,167 @@ function pqRenderCalendar(){
     return map;
   });
 
-  // All weeks across all trenes
+  // Todas las semanas (unión) — misma escala que el Gantt
   const allWeeksSet = new Set();
   libData.forEach(pkg => (pkg.weeks||[]).forEach(w => allWeeksSet.add(+w.num)));
   const sortedWeeks = Array.from(allWeeksSet).sort((a,b)=>a-b);
-
-  if(!sortedWeeks.length){
-    _resetVis();
-    wrap.innerHTML='<div style="color:#9ca3af;font-size:12px;text-align:center;padding:20px">Sin semanas definidas</div>';
-    if(legEl) legEl.innerHTML='';
-    return;
-  }
-
-  // Expand pq-visual to fit the gantt
-  if(vis){ vis.style.height='auto'; vis.style.alignItems='stretch'; vis.style.justifyContent='flex-start'; }
-
-  // Group consecutive weeks by month (Monday of week as reference)
-  const monthGroups = [];
-  sortedWeeks.forEach(wn => {
-    const mon   = libIsoWeekMonday(year, wn);
-    const mName = MONTH_NAME[mon.getMonth()];
-    const last  = monthGroups[monthGroups.length-1];
-    if(last && last.name === mName) last.count++;
-    else monthGroups.push({name: mName, count: 1});
-  });
+  if(!sortedWeeks.length){ _empty('Sin semanas definidas'); return; }
 
   const nWeeks     = sortedWeeks.length;
+  const idxOf      = wn => sortedWeeks.indexOf(wn);
+  const cwIdx      = idxOf(cw);
   const usedStages = new Set();
+  const pct        = n => (n / nWeeks * 100);   // fracción de semana → % del ancho
 
-  const gantt = document.createElement('div');
-  gantt.className = 'pq-gantt';
-  gantt.style.gridTemplateColumns = `72px repeat(${nWeeks},minmax(26px,1fr))`;
-
-  // Row 1 — Month headers
-  gantt.appendChild(document.createElement('div')).className='pq-gantt-hdr-corner';
-  monthGroups.forEach(mg => {
-    const el = Object.assign(document.createElement('div'),{className:'pq-gantt-month',textContent:mg.name});
-    el.style.gridColumn = 'span '+mg.count;
-    gantt.appendChild(el);
-  });
-
-  // Row 2 — Week number headers
-  gantt.appendChild(document.createElement('div')).className='pq-gantt-hdr-corner';
+  // Meses (agrupación de semanas consecutivas); marca el mes actual
+  const monthGroups = [];
   sortedWeeks.forEach(wn => {
-    gantt.appendChild(Object.assign(document.createElement('div'),{
-      className:'pq-gantt-wkhdr'+(wn===cw?' pq-gantt-wkhdr-cw':''),
-      textContent:'S'+wn
-    }));
+    const m     = libIsoWeekMonday(year, wn).getMonth();
+    const mName = MONTH_NAME[m];
+    const last  = monthGroups[monthGroups.length-1];
+    if(last && last.month === m) last.count++;
+    else monthGroups.push({name: mName, month: m, count: 1});
   });
 
-  // Tren rows
+  const root = document.createElement('div');
+  root.className = 'pq-road';
+
+  // ── Cabecera: meses (con jerarquía) + semanas ──
+  const head = document.createElement('div');
+  head.className = 'pq-road-head';
+  const gridCols = `repeat(${nWeeks},minmax(0,1fr))`;
+
+  const months = document.createElement('div');
+  months.className = 'pq-road-months';
+  months.style.gridTemplateColumns = gridCols;
+  let colCursor = 1;
+  monthGroups.forEach(mg => {
+    const el = Object.assign(document.createElement('div'),{
+      className:'pq-road-month'+(mg.month===curMonth?' cur':''), textContent:mg.name });
+    el.style.gridColumn = colCursor + ' / ' + (colCursor + mg.count);
+    months.appendChild(el); colCursor += mg.count;
+  });
+
+  const weeks = document.createElement('div');
+  weeks.className = 'pq-road-weeks';
+  weeks.style.gridTemplateColumns = gridCols;
+  sortedWeeks.forEach(wn => {
+    weeks.appendChild(Object.assign(document.createElement('div'),{
+      className:'pq-road-wk'+(wn===cw?' cur':''), textContent:'S'+wn }));
+  });
+  head.appendChild(months); head.appendChild(weeks);
+  root.appendChild(head);
+
+  // ── Trenes en escalera (nombre sobre barra posicionada por fecha) ──
+  const trains = document.createElement('div');
+  trains.className = 'pq-road-trains';
+
+  const tip = _pqRoadTip();
+  const showTip = (e, html) => {
+    tip.innerHTML = html; tip.classList.add('show');
+    const pad = 14, tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = e.clientX + pad, y = e.clientY + pad;
+    if(x + tw > window.innerWidth - 8)  x = e.clientX - pad - tw;
+    if(y + th > window.innerHeight - 8) y = e.clientY - pad - th;
+    tip.style.left = x+'px'; tip.style.top = y+'px';
+  };
+  const hideTip = () => tip.classList.remove('show');
+
   libData.forEach((pkg, pIdx) => {
-    const stages      = pkgStages[pIdx];
-    const pkgWeekNums = (pkg.weeks||[]).map(w=>+w.num);
-    if(!pkgWeekNums.length) return;
-    const minW      = Math.min(...pkgWeekNums);
-    const maxW      = Math.max(...pkgWeekNums);
-    const shortName = (pkg.name||'').replace(/(?:tren)\s*(\d+)/i,'T$1').trim()||'T'+(pIdx+1);
+    const stages = pkgStages[pIdx];
+    const wns = (pkg.weeks||[]).map(w=>+w.num);
+    if(!wns.length) return;
+    const minW = Math.min(...wns), maxW = Math.max(...wns);
+    const leftPct  = pct(idxOf(minW));
+    const widthPct = pct(idxOf(maxW) - idxOf(minW) + 1);
+    const nombre = pkg.name || ('Tren '+(pIdx+1));
 
-    // Label cell
-    const lbl = Object.assign(document.createElement('div'),{className:'pq-gantt-label',title:pkg.name||'',textContent:pkg.name||('Tren '+(pIdx+1))});
-    gantt.appendChild(lbl);
+    const train = document.createElement('div');
+    train.className = 'pq-road-train';
 
-    // Bar cells
-    let firstBarCell = true;
-    sortedWeeks.forEach(wn => {
-      const cell = document.createElement('div');
-      if(wn < minW || wn > maxW){ cell.className='pq-gantt-cell'; gantt.appendChild(cell); return; }
-      const stage = stages[wn];
-      if(stage) usedStages.add(stage);
-      const color = STAGE_COLOR[stage]||'#9ca3af';
-      cell.className = 'pq-gantt-cell pq-gantt-bar'+(firstBarCell?' pq-gantt-bar-first':'');
-      cell.style.background = color;
-      const isF = wn===minW, isL = wn===maxW;
-      cell.style.borderRadius = (isF&&isL)?'4px':isF?'4px 0 0 4px':isL?'0 4px 4px 0':'0';
-      if(firstBarCell){ cell.textContent=shortName; firstBarCell=false; }
-      gantt.appendChild(cell);
+    // Nombre del tren — alineado al inicio de su barra (escalera)
+    const name = Object.assign(document.createElement('div'),{className:'pq-road-name'});
+    name.innerHTML = '🚄 <span>'+nombre+'</span>';
+    name.style.marginLeft = leftPct.toFixed(3)+'%';
+    train.appendChild(name);
+
+    // Carril de la barra (ancho completo); la barra se posiciona por fecha
+    const lane = document.createElement('div');
+    lane.className = 'pq-road-lane';
+    const bar = document.createElement('div');
+    bar.className = 'pq-road-bar';
+    bar.style.left  = leftPct.toFixed(3)+'%';
+    bar.style.width = widthPct.toFixed(3)+'%';
+
+    // Segmentos por fase (semanas consecutivas de la misma etapa)
+    const segs = [];
+    for(let wn=minW; wn<=maxW; wn++){
+      const st = stages[wn] || (segs.length ? segs[segs.length-1].stage : 'anunciado');
+      usedStages.add(st);
+      const last = segs[segs.length-1];
+      if(last && last.stage===st){ last.end=wn; last.count++; }
+      else segs.push({stage:st, start:wn, end:wn, count:1});
+    }
+
+    segs.forEach(sg => {
+      const seg = document.createElement('div');
+      seg.className = 'pq-road-seg';
+      seg.style.flex = sg.count;
+      seg.style.background = LIB_STAGE_COLOR[sg.stage] || '#9ca3af';
+      if(sg.count >= 2){
+        seg.appendChild(Object.assign(document.createElement('span'),{className:'pq-road-seg-lbl',textContent:SEG_LBL[sg.stage]||''}));
+      }
+      // Indicador "hoy" dentro de la fase que contiene la semana actual
+      if(cw >= sg.start && cw <= sg.end){
+        const dot = document.createElement('div');
+        dot.className = 'pq-road-today';
+        dot.style.left = (((cw - sg.start + 0.5) / sg.count) * 100) + '%';
+        seg.appendChild(dot);
+      }
+      // Tooltip (sin modal)
+      const ini = libIsoWeekMonday(year, sg.start);
+      const fin = libIsoWeekMonday(year, sg.end); fin.setDate(fin.getDate()+6);
+      const wkTxt  = sg.start===sg.end ? ('S'+sg.start) : ('S'+sg.start+'–S'+sg.end);
+      const durTxt = sg.count===1 ? '1 semana' : (sg.count+' semanas');
+      const html =
+        `<div class="pq-road-tip-h"><span class="pq-road-tip-dot" style="background:${LIB_STAGE_COLOR[sg.stage]}"></span>${nombre}</div>`+
+        `<div class="pq-road-tip-row"><span>Fase</span><b>${STAGE_LABEL_MAP[sg.stage]||sg.stage}</b></div>`+
+        `<div class="pq-road-tip-row"><span>Inicio</span><b>${fmtD(ini)}</b></div>`+
+        `<div class="pq-road-tip-row"><span>Fin</span><b>${fmtD(fin)}</b></div>`+
+        `<div class="pq-road-tip-row"><span>Duración</span><b>${durTxt}</b></div>`+
+        `<div class="pq-road-tip-row"><span>Semana</span><b>${wkTxt}</b></div>`;
+      seg.addEventListener('mouseenter', e => showTip(e, html));
+      seg.addEventListener('mousemove',  e => showTip(e, html));
+      seg.addEventListener('mouseleave', hideTip);
+      bar.appendChild(seg);
     });
+    lane.appendChild(bar);
+    train.appendChild(lane);
+    trains.appendChild(train);
   });
 
-  wrap.appendChild(gantt);
+  // Semana actual: línea punteada sutil + chip "HOY" (sin banda), atraviesa el timeline
+  if(cwIdx >= 0){
+    const lx = pct(cwIdx + 0.5).toFixed(3)+'%';
+    const line = document.createElement('div');
+    line.className = 'pq-road-cwline';
+    line.style.left = lx;
+    trains.appendChild(line);
+    const hoy = Object.assign(document.createElement('div'),{className:'pq-road-hoy',textContent:'HOY'});
+    hoy.style.left = lx;
+    trains.appendChild(hoy);
+  }
 
+  root.appendChild(trains);
+  wrap.appendChild(root);
+
+  // ── Leyenda: mismo componente y disposición que Requerimientos/Proyectos ──
+  // (lista vertical .pq-legend por defecto; sin estilos inline propios).
   if(legEl){
-    const LEGEND_DEF = [
-      {key:'anunciado',label:'Anuncio',  color:'#9ca3af'},
-      {key:'qa',       label:'QA',        color:'#f59e0b'},
-      {key:'beta',     label:'Beta',      color:'#38bdf8'},
-      {key:'tienda',   label:'Liberación',color:'#22c55e'},
-    ];
-    legEl.innerHTML = LEGEND_DEF
+    legEl.removeAttribute('style');
+    legEl.innerHTML = LIB_STAGE_GROUPS
       .filter(l=>usedStages.has(l.key))
-      .map(l=>`<div class="pq-legend-item"><span class="pq-gantt-swatch" style="background:${l.color}"></span>${l.label}</div>`)
+      .map(l=>`<div class="pq-legend-item"><span class="pq-legend-dot" style="background:${l.color}"></span>${l.label}</div>`)
       .join('');
   }
 }
@@ -3336,37 +3427,14 @@ function renderPrincipal(){
 
 /* Panel "Portafolio de requerimientos" (Proyectos por terminar / Proyectos
    listos para desarrollar) — reutilizado en HeadCount. */
-function renderReqPortfolioPanel(targetId){
-  const carrilName = activeCarrilName();
-  const carrilDevs = HC_ROSTER.filter(d => d.rol!=='Gerente');
-
-  // Build HC counts + desc map keyed by folio
-  const hcCounts = {};
-  const hcDescMap = {};
-  carrilDevs.forEach(d=>{
-    (d.proyectos||[]).forEach(pr=>{
-      if(!pr.folio) return;
-      if(!hcCounts[pr.folio]) hcCounts[pr.folio]={int:0,ext:0,finDate:null};
-      if(d.esquema==='Interno') hcCounts[pr.folio].int++; else hcCounts[pr.folio].ext++;
-      if(pr.fin){
-        const fd=new Date(pr.fin+'T00:00:00');
-        if(!hcCounts[pr.folio].finDate||fd>hcCounts[pr.folio].finDate) hcCounts[pr.folio].finDate=fd;
-      }
-      if(pr.desc && !hcDescMap[pr.folio]) hcDescMap[pr.folio] = pr.desc;
-    });
-  });
-
-  const pf = PORTAFOLIOS[reqActiveCarril];
+function renderReqPortfolioPanel(targetId, model){
+  // "Proyectos por terminar" consume EXACTAMENTE el mismo modelo normalizado
+  // que el Detalle de ocupación y los KPIs (una sola fuente de verdad).
+  model = model || buildHeadcountModel();
   const ESTADOS_TERMINADOS = new Set(['Liberado', 'Hecho']);
-  const porTerminar = (CARRILES[carrilName] || [])
-    .filter(folio => { const p=PROYECTOS[folio]; return p && !ESTADOS_TERMINADOS.has(p.estado||''); })
-    .map(folio => {
-      const p=PROYECTOS[folio];
-      const hc=hcCounts[folio]||{int:0,ext:0,finDate:null};
-      const dias=hc.finDate?Math.round((hc.finDate-TODAY_REF)/86400000):null;
-      const nombre=p?.nombre||hcDescMap[folio]||folio;
-      return {folio, nombre, dias, hcI:hc.int, hcE:hc.ext};
-    })
+  const porTerminar = [...model.projects.values()]
+    .filter(e => e.enPortafolio && !ESTADOS_TERMINADOS.has(e.estado||''))
+    .map(e => ({ folio:e.folio, nombre:e.nombre, dias:e.dias, hcI:e.nInt, hcE:e.nExt }))
     .sort((a,b)=>(a.dias??9999)-(b.dias??9999));
 
   let leftHtml;
@@ -3387,6 +3455,7 @@ function renderReqPortfolioPanel(targetId){
     }).join('');
   }
 
+  const pf = PORTAFOLIOS[reqActiveCarril];
   const listos = (pf?.items||[]).filter(i=>i.estado==='Planeado');
   let rightHtml;
   if(!listos.length){
@@ -3428,9 +3497,9 @@ function renderReqPortfolioPanel(targetId){
 /* ════════════════════════════════════════════════════════════
    LIBERACIONES — rediseño (Money Free Flex)
 ════════════════════════════════════════════════════════════ */
-const STAGE_ORDER = ['anunciado','qa','beta','tienda'];
+const STAGE_ORDER = LIB_STAGE_ORDER;
 const STAGE_LABEL = {anunciado:'Anunciado',qa:'QA',beta:'Beta',tienda:'Tienda'};
-const STAGE_COLOR = {anunciado:'#6366f1', qa:'#d97706', beta:'#16a34a', tienda:'#7c3aed'};
+const STAGE_COLOR = LIB_STAGE_COLOR;
 
 let libData = [];
 function libToast(msg){
@@ -4415,32 +4484,83 @@ libRenderList();
 ════════════════════════════════════════════════════════════ */
 let HC_ROSTER = []; // se llena desde la API (/api/portafolio/data → hc_roster)
 
-/* Cuenta, por folio de proyecto, cuántas personas del roster de HeadCount
-   están asignadas (internos/externos) — así "Proyectos por terminar" siempre
-   coincide con lo que muestra la tabla "Detalle de ocupación". */
-function hcRosterCountsByFolio(){
-  const counts = {};
-  HC_ROSTER.forEach(d=>{
-    (d.proyectos||[]).forEach(pr=>{
-      if(!pr.folio) return;
-      if(!counts[pr.folio]) counts[pr.folio] = {int:0, ext:0, finDate:null};
-      if(d.esquema==='Interno') counts[pr.folio].int++; else counts[pr.folio].ext++;
-      if(pr.fin){
-        const fd = new Date(pr.fin+'T00:00:00');
-        if(!counts[pr.folio].finDate || fd > counts[pr.folio].finDate)
-          counts[pr.folio].finDate = fd;
-      }
+/* ── Modelo normalizado ÚNICO de HeadCount ─────────────────────────────────
+   Toda la información del módulo (KPIs, Detalle de ocupación, Proyectos por
+   terminar) se deriva de aquí. Un solo cálculo, una sola fuente de verdad.
+   Después cada componente únicamente renderiza. */
+
+// Clave canónica de folio: neutraliza diferencias de formato de la Base Maestra
+// (p. ej. "LEANBA112725" vs "LEANBA-112725") para unir HC ↔ portafolio de forma
+// robusta. Es la corrección de raíz al desfase de folios que rompía la unión.
+function hcFolioKey(f){ return String(f||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+
+function buildHeadcountModel(){
+  const carrilName = activeCarrilName();
+  const devs = HC_ROSTER.filter(d => d.rol !== 'Gerente');
+
+  const totals = {
+    total: devs.length,
+    int:   devs.filter(d => d.esquema === 'Interno').length,
+    ext:   devs.filter(d => d.esquema === 'Externo').length,
+  };
+
+  const projects = new Map();  // clave canónica de folio → proyecto normalizado
+  const ensure = key => {
+    if(!projects.has(key)) projects.set(key, {
+      key, folio:null, nombre:null, estado:null,
+      ini:null, fin:null, dias:null,
+      devs:[], nInt:0, nExt:0, total:0,
+      enPortafolio:false, ocupado:false, disponible:false,
+    });
+    return projects.get(key);
+  };
+
+  // 1) Semilla: proyectos del carril (metadata + estado) desde el portafolio
+  (CARRILES[carrilName] || []).forEach(folio => {
+    const p = PROYECTOS[folio];
+    if(!p) return;
+    const e = ensure(hcFolioKey(folio));
+    e.folio = folio;
+    e.nombre = p.nombre || folio;
+    e.estado = p.estado || null;
+    e.enPortafolio = true;
+  });
+
+  // 2) Overlay: TODAS las asignaciones del roster, unidas por clave canónica
+  devs.forEach(d => {
+    const asigs = (d.proyectos || []).filter(pr => pr && pr.folio);
+    if(!asigs.length){
+      const e = ensure('__DISPONIBLE__');
+      e.disponible = true;
+      e.nombre = 'Sin proyecto asignado';
+      e.devs.push(d);
+      if(d.esquema === 'Interno') e.nInt++; else e.nExt++;
+      e.total++;
+      return;
+    }
+    asigs.forEach(pr => {
+      const e = ensure(hcFolioKey(pr.folio));
+      if(!e.folio)  e.folio  = pr.folio;
+      if(!e.nombre) e.nombre = pr.desc || pr.folio;
+      e.ocupado = true;
+      e.devs.push(d);
+      if(d.esquema === 'Interno') e.nInt++; else e.nExt++;
+      e.total++;
+      if(pr.ini && pr.ini !== 'TBD' && (!e.ini || pr.ini < e.ini)) e.ini = pr.ini;
+      if(pr.fin && pr.fin !== 'TBD' && (!e.fin || pr.fin > e.fin)) e.fin = pr.fin;
     });
   });
-  return counts;
+
+  // 3) Días restantes — un solo cálculo, desde la fecha fin normalizada
+  projects.forEach(e => {
+    e.dias = e.fin ? Math.round((new Date(e.fin + 'T00:00:00') - TODAY_REF) / 86400000) : null;
+  });
+
+  return { carrilName, devs, totals, projects };
 }
 
-function renderHcKpis(){
-  const devs = HC_ROSTER.filter(d=>d.rol!=='Gerente');
-  const gers = HC_ROSTER.filter(d=>d.rol==='Gerente');
-  const total = devs.length;
-  const int = devs.filter(d=>d.esquema==='Interno').length;
-  const ext = devs.filter(d=>d.esquema==='Externo').length;
+function renderHcKpis(model){
+  const { total, int, ext } = model.totals;
   const pct = n => total ? Math.round(n/total*100)+'% del total' : '—';
   document.getElementById('hc-kpi-row').innerHTML = `
     <div class="kpi-card">
@@ -4467,57 +4587,35 @@ function hcFmtFecha(iso){
   return d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});
 }
 
-function renderHcDetalle(){
-  const devs = HC_ROSTER.filter(d => d.rol !== 'Gerente');
-
-  // Agrupar devs por proyecto — ini=mínimo, fin=máximo entre todos los devs del proyecto
-  const proyMap = new Map();
-  devs.forEach(d => {
-    const p = d.proyectos[0] || null;
-    const key = (p && p.folio) ? p.folio : (p && p.desc ? p.desc : '__sin__');
-    if (!proyMap.has(key)) {
-      proyMap.set(key, {
-        folio: p ? p.folio : null,
-        desc:  p ? p.desc  : 'Sin proyecto asignado',
-        ini:   null,
-        fin:   null,
-        devs:  []
-      });
-    }
-    const entry = proyMap.get(key);
-    if(p && p.ini && p.ini !== 'TBD') {
-      if(!entry.ini || p.ini < entry.ini) entry.ini = p.ini;
-    }
-    if(p && p.fin && p.fin !== 'TBD') {
-      if(!entry.fin || p.fin > entry.fin) entry.fin = p.fin;
-    }
-    entry.devs.push(d);
-  });
-
+function renderHcDetalle(model){
   const el = document.getElementById('hc-det-section');
-  if (proyMap.size === 0) {
+
+  // Solo proyectos con ocupación (incluye el bucket de disponibles); mismos datos del modelo
+  const proyectos = [...model.projects.values()]
+    .filter(e => e.devs.length > 0)
+    .sort((a,b) => (a.disponible?1:0) - (b.disponible?1:0));   // disponibles al final
+
+  if (proyectos.length === 0) {
     el.innerHTML = '<p style="color:var(--text-muted);padding:1rem">Sin datos de Head Count.</p>';
     return;
   }
 
-  el.innerHTML = [...proyMap.values()].map(proy => {
-    const nInt = proy.devs.filter(d => d.esquema === 'Interno').length;
-    const nExt = proy.devs.filter(d => d.esquema === 'Externo').length;
+  el.innerHTML = proyectos.map(proy => {
+    const nInt = proy.nInt, nExt = proy.nExt;
     const fin  = proy.fin ? hcFmtFecha(proy.fin) : null;
+    const ini  = proy.ini ? hcFmtFecha(proy.ini) : null;
 
     const rows = proy.devs.map(d => {
-      const isAvail = !d.proyectos.length;
-      const dias = proy.fin ? Math.round((new Date(proy.fin+'T00:00:00')-TODAY_REF)/86400000) : null;
-      const estCell = isAvail
+      const estCell = proy.disponible
         ? `<span class="hc-badge hc-b-libre">Disponible</span>`
-        : dias !== null && dias < 0   ? `<span class="hc-badge hc-b-risk">En riesgo</span>`
-        : dias !== null && dias <= 30 ? `<span class="hc-badge hc-b-pronto">Pronto libre</span>`
+        : proy.dias !== null && proy.dias < 0   ? `<span class="hc-badge hc-b-risk">En riesgo</span>`
+        : proy.dias !== null && proy.dias <= 30 ? `<span class="hc-badge hc-b-pronto">Pronto libre</span>`
         : `<span class="hc-badge hc-b-act">Activo</span>`;
       return `<tr>
         <td style="font-size:11px;font-weight:600;color:var(--text)">${d.nombre||'—'}</td>
         <td><span class="hc-badge ${d.esquema==='Interno'?'hc-b-int':'hc-b-ext'}">${d.esquema}</span></td>
         <td style="font-size:10px;color:var(--text-muted)">${d.perfil||'—'}</td>
-        <td style="font-size:10px;color:var(--text-muted)">${proy.ini?hcFmtFecha(proy.ini):'—'}</td>
+        <td style="font-size:10px;color:var(--text-muted)">${ini||'—'}</td>
         <td style="font-size:10px;color:var(--text-muted)">${fin||'—'}</td>
         <td>${estCell}</td>
       </tr>`;
@@ -4526,12 +4624,13 @@ function renderHcDetalle(){
     const folioTag = proy.folio
       ? `<span style="font-size:10px;font-weight:700;color:#6366f1;margin-right:6px">${proy.folio}</span>`
       : '';
-    const descShort = proy.desc.length > 70 ? proy.desc.substring(0,68)+'…' : proy.desc;
+    const desc = proy.nombre || 'Sin proyecto asignado';
+    const descShort = desc.length > 70 ? desc.substring(0,68)+'…' : desc;
 
     return `<div class="det-carril" style="margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8f9fb;border-radius:8px 8px 0 0;border-bottom:1px solid #e5e7eb">
         ${folioTag}
-        <span style="font-size:11px;font-weight:600;color:var(--text)" title="${proy.desc}">${descShort}</span>
+        <span style="font-size:11px;font-weight:600;color:var(--text)" title="${desc}">${descShort}</span>
         <span style="margin-left:auto;display:flex;gap:6px">
           <span class="hc-badge hc-b-int" style="font-size:10px">${nInt} Int.</span>
           <span class="hc-badge hc-b-ext" style="font-size:10px">${nExt} Ext.</span>
@@ -4552,10 +4651,11 @@ function renderHcDetalle(){
 
 let hcInited = false;
 function renderHeadcountTab(){
-  renderHcKpis();
-  renderHcDetalle();
+  const model = buildHeadcountModel();   // fuente única para todo el módulo
+  renderHcKpis(model);
+  renderHcDetalle(model);
   hcInited = true;
-  renderReqPortfolioPanel('hc-req-body');
+  renderReqPortfolioPanel('hc-req-body', model);
 }
 </script>
 <script>
@@ -4648,11 +4748,14 @@ function _applyPortafolioData(d) {
     Object.assign(PORTAFOLIOS, d.portafolios);
     Object.entries(PORTAFOLIOS).forEach(([pfName, pf]) => {
       if (pf && pf.items) {
-        // Normalizar estados en el punto de entrada — toda comparación posterior
-        // trabaja contra valores canónicos sin depender del texto exacto del Sheet.
+        // Pipeline: normalización → validación contra catálogo oficial → render.
+        // 1) Normalizar estados en el punto de entrada (valores canónicos).
         pf.items.forEach(item => {
           if (item.estado != null) item.estado = normalizeEstado(item.estado, { folio: item.folio, carril: pfName });
         });
+        // 2) Validación contra el catálogo oficial (única función): solo estados
+        //    oficiales se conservan. Todo consumidor posterior ve datos ya validados.
+        pf.items = pf.items.filter(item => isOfficialRequirementState(item.estado));
         reqRecalcPriorities(pf.items);
       }
     });
