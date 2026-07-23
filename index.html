@@ -1564,158 +1564,92 @@ const LIB_STAGE_GROUPS = [
 ];
 const LIB_STAGE_COLOR = Object.fromEntries(LIB_STAGE_GROUPS.map(g => [g.key, g.color]));
 const LIB_STAGE_ORDER = LIB_STAGE_GROUPS.map(g => g.key);
-// Estado_Descripcion (Base Maestra) → color en el donut del Dashboard Principal.
-const ESTADO_DESC_COLORS = {
-  'Por Hacer':      '#6b7280',
-  'En curso':       '#f59e0b',
-  'Dependencias':   '#3b82f6',
-  'Detenido':       '#dc2626',
-  'Estabilización': '#6366f1',
-  'Liberado':       '#10b981',
-  'Hecho':          '#9ca3af',
-};
-// Leyenda fija del Dashboard Principal — etapas funcionales del ciclo de vida.
-// Independiente del donut (que calcula por Estado_Descripcion).
-// No muestra contadores: el donut ya los representa visualmente.
-const _PROY_LEGEND_STAGES = [
-  {num:6,  label:'Por iniciar',    color:'#6b7280'},
-  {num:7,  label:'Desarrollo',     color:'#f59e0b'},
-  {num:8,  label:'QA',             color:'#3b82f6'},
-  {num:9,  label:'Prod',           color:'#10b981'},
-  {num:10, label:'Beta',           color:'#f97316'},
-  {num:11, label:'Tiendas',        color:'#8b5cf6'},
-  {num:12, label:'Estabilización', color:'#6366f1'},
-];
-// ── Configuración central de estados de Proyectos ──────────────────────────
-// ÚNICA FUENTE DE VERDAD.
-//
-// includeInDashboard:  aparece en la tarjeta de Proyectos del Dashboard Principal (donut)
-// includeInProyectos:  visible en la pestaña Proyectos
-//
-// estados: keywords (substring, case-insensitive) que se contrastan con:
-//   (a) proyecto.estado del Sheet (Estado_Descripcion) — coincidencia exacta/substring
-//   (b) nombre de la actividad actual del Gantt — coincidencia substring
+// ── ÚNICO catálogo oficial del ciclo de vida de Proyectos ──────────────────
+// Toda la app (dona, tooltips, semáforo, Fase del proyecto, Gantt, tarjetas, KPIs)
+// consume estos estados vía resolveProjectLifecycle(). No existe otro catálogo.
+//   'estados' = keywords (substring, minúsculas) para homologar el valor granular
+//               de la columna "Fase del proyecto" del Sheet al estado oficial.
+//   'Por iniciar' se deriva del tiempo (aún no inicia la 1ª actividad), no de keywords.
+//   'Cerrado' es terminal (cierre administrativo): NO aparece en dona/KPIs/timeline.
 const PROJECT_STATE_GROUPS = [
-  {
-    key: 'por_iniciar',
-    label: 'Por iniciar',
-    color: '#6b7280',
-    cssClass: 'ps-por-iniciar',
-    includeInDashboard: true,
-    includeInProyectos: true,
-    estados: ['por iniciar', 'por hacer'],
-  },
-  {
-    key: 'desarrollo',
-    label: 'Desarrollo',
-    color: '#f59e0b',
-    cssClass: 'ps-desarrollo',
-    includeInDashboard: true,
-    includeInProyectos: true,
-    estados: ['desarrollo'],
-  },
-  {
-    key: 'pruebas_qa',
-    label: 'Pruebas QA',
-    color: '#3b82f6',
-    cssClass: 'ps-pruebas-qa',
-    includeInDashboard: true,
-    includeInProyectos: true,
-    estados: ['qa', 'prueba', 'testing', 'uat'],
-  },
-  {
-    key: 'liberacion',
-    label: 'Liberación',
-    color: '#10b981',
-    cssClass: 'ps-liberacion',
-    includeInDashboard: true,
-    includeInProyectos: true,
-    estados: ['producción', 'produccion', 'prod', 'beta', 'liberaci', 'tienda'],
-  },
-  {
-    key: 'estabilizacion',
-    label: 'Estabilización',
-    color: '#6366f1',
-    cssClass: 'ps-estabilizacion',
-    includeInDashboard: true,
-    includeInProyectos: true,
-    estados: ['estabiliz'],
-  },
-  {
-    key: 'hecho',
-    label: 'Hecho',
-    color: '#0d9488',
-    cssClass: 'ps-hecho',
-    includeInDashboard: true,
-    includeInProyectos: true,
-    estados: ['hecho'],
-  },
-  {
-    key: 'cerrado',
-    label: 'Cerrado',
-    color: '#64748b',
-    cssClass: 'ps-cerrado',
-    includeInDashboard: true,
-    includeInProyectos: true,
-    estados: ['cerrado'],
-  },
-  {
-    key: 'liberado',
-    label: 'Liberado',
-    color: '#9ca3af',
-    cssClass: 'ps-liberado',
-    includeInDashboard: false,
-    includeInProyectos: true,
-    estados: ['liberado'],
-  },
+  { key:'por_iniciar',    num:6,  label:'Por iniciar',    color:'#6b7280', estados:[] },
+  { key:'desarrollo',     num:7,  label:'Desarrollo',     color:'#f59e0b', estados:['desarrollo'] },
+  { key:'qa',             num:8,  label:'QA',             color:'#3b82f6', estados:['qa','prueba','testing','uat'] },
+  { key:'produccion',     num:9,  label:'Producción',     color:'#10b981', estados:['produc','prod','liberaci'] },
+  { key:'beta',           num:10, label:'Beta',           color:'#f97316', estados:['beta'] },
+  { key:'tiendas',        num:11, label:'Tiendas',        color:'#8b5cf6', estados:['tienda'] },
+  { key:'estabilizacion', num:12, label:'Estabilización', color:'#6366f1', estados:['estabiliz'] },
+  { key:'cerrado',        num:99, label:'Cerrado',        color:'#64748b', estados:['cerrado'], terminal:true },
 ];
+// ── Estructuras derivadas (NO editar manualmente) ──
+const PROJECT_OFFICIAL_LABELS = new Set(PROJECT_STATE_GROUPS.map(g => g.label));
+// Estados operativos (excluye el terminal 'Cerrado') — dona, leyenda, conteos
+const PROJECT_OPERATIONAL = PROJECT_STATE_GROUPS.filter(g => !g.terminal);
+// Leyenda numerada de la tarjeta de Proyectos del Dashboard (6..12, sin Cerrado)
+const _PROY_LEGEND_STAGES = PROJECT_OPERATIONAL.map(g => ({ num:g.num, label:g.label, color:g.color }));
+// color oficial por label — dona, tooltips, dots del selector
+const PROJECT_STATE_COLOR = Object.fromEntries(PROJECT_STATE_GROUPS.map(g => [g.label, g.color]));
 
 // FASE_ORDER: usado solo para el dropdown de override manual — no se usa para inferir fases.
-const FASE_ORDER = PROJECT_STATE_GROUPS
-  .filter(g => g.includeInDashboard && g.key !== 'por_iniciar')
-  .map(g => g.label);
+// El selector manual ofrece TODO el catálogo oficial, en su orden natural
+// (Por iniciar → ... → Estabilización → Cerrado). Única fuente: PROJECT_STATE_GROUPS.
+const FASE_ORDER = PROJECT_STATE_GROUPS.map(g => g.label);
 
-// Fuente de verdad: columna "Fase del proyecto" de la actividad cuya semana contiene hoy.
-// Si override manual está activo, se usa eso. Sin heurísticas ni keywords.
-function _currentFaseFromData(p) {
-  if (p.fase_manual) return p.fase_manual;
-  // Buscar actividad cuyo rango [ini, fin] contiene la semana actual
-  for (const gr of (p.grupos || [])) {
-    for (const act of (gr.acts || [])) {
-      if (!act.fase || !act.ini || !act.fin) continue;
-      const wIni = dateToISOWeek(new Date(act.ini + 'T00:00:00'));
-      const wFin = dateToISOWeek(new Date(act.fin + 'T00:00:00'));
-      if (CW >= wIni && CW <= wFin) return act.fase;
-    }
-  }
-  // Sin actividad en curso: tomar la siguiente actividad futura más cercana
-  let best = null, bestWIni = Infinity;
-  for (const gr of (p.grupos || [])) {
-    for (const act of (gr.acts || [])) {
-      if (!act.fase || !act.ini) continue;
-      const wIni = dateToISOWeek(new Date(act.ini + 'T00:00:00'));
-      if (wIni > CW && wIni < bestWIni) { bestWIni = wIni; best = act; }
-    }
-  }
-  if (best) return best.fase;
-  return 'sin información';
-}
-
-// Homologa el valor de "Fase del proyecto" (granular del Sheet, p. ej. "Desarrollo
-// Backend", "Pruebas unitarias") al catálogo OFICIAL de fases (FASE_ORDER). Si ya es
-// oficial la respeta; si mapea por keyword de PROJECT_STATE_GROUPS devuelve la fase
-// oficial; si no mapea a ninguna, 'sin información'. Así la tarjeta solo pinta oficiales.
-const PROJECT_OFFICIAL_LABELS = new Set(FASE_ORDER);
-function homologateFase(raw){
+// Homologa un valor granular de "Fase del proyecto" del Sheet al catálogo oficial.
+// Devuelve la etiqueta oficial, o '' si no mapea a ninguna.
+function homologateLifecycle(raw){
   const v = String(raw || '').trim();
-  if(!v || v.toLowerCase() === 'sin información') return 'sin información';
-  if(PROJECT_OFFICIAL_LABELS.has(v)) return v;
+  if(!v) return '';
+  if(PROJECT_OFFICIAL_LABELS.has(v)) return v;   // ya es oficial
   const low = v.toLowerCase();
   for(const g of PROJECT_STATE_GROUPS){
-    if(!PROJECT_OFFICIAL_LABELS.has(g.label)) continue;   // solo grupos oficiales (los del dropdown)
-    if((g.estados || []).some(k => low.includes(String(k).toLowerCase()))) return g.label;
+    if((g.estados || []).some(k => low.includes(k))) return g.label;
   }
-  return 'sin información';
+  return '';
+}
+
+// ── ÚNICA fuente de verdad del ciclo de vida del Proyecto ──────────────────
+// resolveProjectLifecycle(p) devuelve SIEMPRE un estado oficial, con esta prioridad:
+//   1. Edición manual persistida (fase_manual), homologada. 'Cerrado' incluido.
+//   2. La base indica cierre administrativo (Estado_Descripcion = "Cerrado") → Cerrado.
+//   3. Aún no inicia la 1ª actividad (o no hay actividades) → "Por iniciar".
+//   4. Actividad en ejecución hoy → su fase oficial.
+//   5. Todas finalizadas → la ÚLTIMA fase oficial alcanzada (fin más reciente).
+// La consumen: dona, tooltips, semáforo, Fase del proyecto, Gantt, tarjetas, KPIs.
+function resolveProjectLifecycle(p){
+  // 1. Edición manual persistida (homologada; un valor legado no oficial se ignora)
+  if (p.fase_manual){ const m = homologateLifecycle(p.fase_manual); if (m) return m; }
+  // 2. Cierre administrativo indicado por la base
+  if (String(p.estado || '').trim().toLowerCase() === 'cerrado') return 'Cerrado';
+
+  // Actividades válidas con fechas reales (para ordenar por fin, no por lectura)
+  const acts = [];
+  for (const gr of (p.grupos || [])) {
+    for (const a of (gr.acts || [])) {
+      if (!a.fase || !a.ini || !a.fin) continue;
+      acts.push({ fase: a.fase, dIni: new Date(a.ini + 'T00:00:00'), dFin: new Date(a.fin + 'T00:00:00') });
+    }
+  }
+
+  // 3. Sin actividades, o la primera aún no inicia → Por iniciar
+  if (!acts.length) return 'Por iniciar';
+  const earliest = acts.reduce((min, a) => a.dIni < min ? a.dIni : min, acts[0].dIni);
+  if (TODAY_REF < earliest) return 'Por iniciar';
+
+  // 4. Actividad en ejecución hoy → su fase oficial
+  const active = acts.find(a => a.dIni <= TODAY_REF && TODAY_REF <= a.dFin);
+  if (active){ const f = homologateLifecycle(active.fase); if (f) return f; }
+
+  // 5. Última fase oficial alcanzada (actividad finalizada con fin más reciente)
+  const finished = acts
+    .filter(a => a.dFin < TODAY_REF)
+    .map(a => ({ dFin: a.dFin, f: homologateLifecycle(a.fase) }))
+    .filter(a => a.f)
+    .sort((a, b) => b.dFin - a.dFin);
+  if (finished.length) return finished[0].f;
+
+  // Entre actividades sin activa ni finalizada oficial → Por iniciar
+  return 'Por iniciar';
 }
 
 let currentProj=null;
@@ -2087,11 +2021,7 @@ function showGBar(ri){
 }
 
 /* ── FASE DROPDOWN ────────────────────────────────────────────── */
-const FASE_DOTS = Object.fromEntries(
-  PROJECT_STATE_GROUPS
-    .filter(g => g.includeInDashboard && g.key !== 'por_iniciar')
-    .map(g => [g.label, g.color])
-);
+const FASE_DOTS = PROJECT_STATE_COLOR;
 function _buildFaseDD(){
   const dd=document.getElementById('fase-dropdown');
   dd.innerHTML=FASE_ORDER.map(f=>`
@@ -2138,7 +2068,7 @@ function loadProject(folio){
   // Semáforo: color de Estado_Semaforo (Base Maestra), texto de Fase del proyecto activa
   const sm=SEMAFORO_MAP[p.semaforo]||{cls:'s-gray',anim:null};
   const ev=document.getElementById('kpi-estado');
-  ev.textContent=homologateFase(_currentFaseFromData(p)); ev.className='status-val '+sm.cls;
+  ev.textContent=resolveProjectLifecycle(p); ev.className='status-val '+sm.cls;
   ['sl-r','sl-y','sl-g'].forEach(id=>document.getElementById(id).classList.remove('sl-anim'));
   if(sm.anim)document.getElementById(sm.anim).classList.add('sl-anim');
 
@@ -2162,7 +2092,7 @@ function loadProject(folio){
     </div>`).join('');
 
   document.getElementById('det-list').innerHTML=[
-    {l:"Estado",v:p.estado||'sin información'},
+    {l:"Estado",v:resolveProjectLifecycle(p)},
     {l:"Fecha inicio",v:p.semIni||'—'},
     {l:"Fecha fin",v:p.semFin||'—'},
     {l:"Replanificada",v:p.semReplan||'—'},
@@ -3016,28 +2946,24 @@ let pqDonutChart=null, pqBarChart=null;
 
 /* ── Dashboard 1: estado de proyectos (donut) — agrupa por Estado_Descripcion exacto ── */
 function pqRenderProyectosDonut(){
-  // 1. Conteo por proyecto único (folio) → Estado_Descripcion exacto de la Base Maestra.
-  //    Nunca contar actividades ni filas; siempre agrupar por ID_Proyecto (folio).
+  // 1. Conteo por proyecto único (folio) usando EXACTAMENTE resolveProjectLifecycle().
+  //    No recalcula ni reinterpreta: solo cuenta el estado oficial de cada proyecto.
+  //    'Cerrado' (terminal) se excluye de la dona/KPIs.
   const counts = {};
   (CARRILES[activeCarrilName()]||[]).forEach(f=>{
     const p = PROYECTOS[f]; if(!p||!f) return;
-    const estado = p.estado || 'sin información';
+    const estado = resolveProjectLifecycle(p);
+    if(estado === 'Cerrado') return;                 // terminal: fuera de la dona
     counts[estado] = (counts[estado] || 0) + 1;
   });
 
   const total = Object.values(counts).reduce((s,v)=>s+v, 0);
 
-  // 2. Catálogo oficial de estados (ESTADO_DESC_COLORS es la fuente de verdad).
-  //    La leyenda siempre muestra todos los estados oficiales, incluso con contador 0.
-  //    Los estados del carril que no están en el catálogo aparecen al final.
-  const officialStates = Object.keys(ESTADO_DESC_COLORS);
-  const extraStates    = Object.keys(counts).filter(e => !ESTADO_DESC_COLORS[e]);
-  const allStates      = [...officialStates, ...extraStates];
-
-  // 3. Donut: solo segmentos con proyectos > 0 (no pintar segmentos vacíos).
-  const donutLabels = allStates.filter(l => (counts[l]||0) > 0);
+  // 2. Catálogo oficial (PROJECT_OPERATIONAL) — mismo orden y colores del ciclo de vida.
+  //    Solo segmentos con proyectos > 0 (no pintar vacíos).
+  const donutLabels = PROJECT_OPERATIONAL.map(g => g.label).filter(l => (counts[l]||0) > 0);
   const chartData   = donutLabels.map(l => counts[l]);
-  const chartColors = donutLabels.map(l => ESTADO_DESC_COLORS[l] || '#94a3b8');
+  const chartColors = donutLabels.map(l => PROJECT_STATE_COLOR[l] || '#94a3b8');
 
   if(pqDonutChart){ pqDonutChart.destroy(); pqDonutChart=null; }
   const canvas = document.getElementById('pq-donut-proyectos');
